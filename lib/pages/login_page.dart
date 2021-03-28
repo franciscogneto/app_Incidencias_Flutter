@@ -1,17 +1,13 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'menu_page.dart';
 
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.only(
-          top: 100,
-          left: 40,
-          right: 40
-        ),
+        padding: EdgeInsets.only(top: 100, left: 40, right: 40),
         color: Colors.white,
         child: ListView(
           children: <Widget>[
@@ -54,27 +50,31 @@ class LoginPage extends StatelessWidget {
             SizedBox(
               height: 50,
             ),
-            Container( //Botão com bordas arredondadas e fundo degrade
+            Container(
+              //Botão com bordas arredondadas e fundo degrade
               height: 60,
               alignment: Alignment.centerLeft,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  stops: [0.3,1],//dois intervalos
-                  colors: [//duas cores
+                  stops: [0.3, 1], //dois intervalos
+                  colors: [
+                    //duas cores
                     Colors.lightBlueAccent,
-                    Colors.blueAccent,
+                    Colors.indigo,
                   ],
                 ),
                 borderRadius: BorderRadius.all(
                   Radius.circular(5),
                 ),
               ),
-              child: SizedBox.expand(//Toma todo o conteúdo do container
+              child: SizedBox.expand(
+                //Toma todo o conteúdo do container
                 child: FlatButton(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,//para alinhamento - space between para fazer espaço entre
+                    mainAxisAlignment: MainAxisAlignment
+                        .spaceBetween, //para alinhamento - space between para fazer espaço entre
                     children: <Widget>[
                       Text(
                         "Login",
@@ -96,8 +96,9 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: ()=>{
-
+                  onPressed: () => {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MenuPage())),
                   },
                 ),
               ),
@@ -108,5 +109,3 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
-
-
