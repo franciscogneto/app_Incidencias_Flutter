@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:incidencias_app/models/Elemento.dart';
+import 'incidences_list_page.dart';
+import 'add_incidence.dart';
 
 class MenuPage extends StatelessWidget {
   final Colorblue = Colors.indigo;
@@ -161,7 +163,7 @@ class MenuPage extends StatelessWidget {
                                   iconSize: 75,
                                   onPressed: () {
                                     Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) => FirstRoute()));
+                                        MaterialPageRoute(builder: (context) => IncidencesList()));
                                   }),
                             ),
                         ],
@@ -191,7 +193,7 @@ class MenuPage extends StatelessWidget {
                                       iconSize: 75,
                                       onPressed: () {
                                         Navigator.push(context,
-                                            MaterialPageRoute(builder: (context) => SecondRoute()));
+                                            MaterialPageRoute(builder: (context) => AddIncidence()));
                                       }),
                                 ),
                               ],
@@ -224,84 +226,3 @@ class MenuPage extends StatelessWidget {
   }
 }
 
-class FirstRoute extends StatelessWidget {
-  final elementos = List<Elemento>.generate(
-    20,
-    (index) => Elemento('$index', 'aaaa'),
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('First Route'),
-      ),
-      body: Center(
-        child: ListView(
-          //Lista que da para dar scroll
-          children: [
-            Element(
-              title: 'titulo',
-              subTitle: 'subTitulo',
-            ),
-            ListTile(
-              title: Text('Segundo Elemento'),
-            ),
-            ListTile(
-              title: Text('Terceiro Elemento'),
-            ),
-            Container(
-              height: 50,
-              color: Colors.red,
-            ),
-            Container(
-              height: 50,
-              color: Colors.blue,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Element extends StatelessWidget {
-  const Element(
-      { //construtor
-      Key key,
-      this.title,
-      this.subTitle})
-      : super(key: key);
-  final String title;
-  final String subTitle;
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-        leading: Icon(Icons.star),
-        trailing: Icon(Icons.ac_unit_rounded),
-        title: Text(title),
-        subtitle: Text(subTitle));
-  }
-}
-
-class SecondRoute extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Second Route"),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            // Navigate back to first route when tapped.
-          },
-          child: Text('Go back!'),
-        ),
-      ),
-    );
-  }
-}
-
-//MainAxisAlignment -> para alinhas em um widget
