@@ -6,17 +6,11 @@ class AddIncidence extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Second Route"),
+        title: Text("Incidência"),
+        centerTitle: true,
+        backgroundColor: Colors.indigo,
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            // Navigate back to first route when tapped.
-          },
-          child: Text('Go back!'),
-        ),
-      ),
+      body: null,
     );
   }
 }

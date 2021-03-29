@@ -220,7 +220,6 @@ class MenuPage extends StatelessWidget {
           ],
           centerTitle: true,
         ),
-
       ),
     );
   }

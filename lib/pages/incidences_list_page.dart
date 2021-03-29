@@ -12,7 +12,9 @@ class IncidencesList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('First Route'),
+        title: Text('Suas Incidências'),
+        backgroundColor: Colors.indigo,
+        centerTitle: true,
       ),
       body: Center(
         child: ListView(
