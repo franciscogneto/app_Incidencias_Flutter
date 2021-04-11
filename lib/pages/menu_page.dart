@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:incidencias_app/models/Elemento.dart';
+
 import 'incidences_list_page.dart';
 import 'add_incidence.dart';
 
 class MenuPage extends StatelessWidget {
   final Colorblue = Colors.indigo;
-  final String image =
-      'https://conteudo.imguol.com.br/c/entretenimento/13/2017/09/20/marcos-o-vin-diesel-brasileiro-1505924753054_v2_900x506.jpg.webp';
+  final String image = 'https://conteudo.imguol.com.br/c/entretenimento/13/2017/09/20/marcos-o-vin-diesel-brasileiro-1505924753054_v2_900x506.jpg.webp';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -102,8 +101,8 @@ class MenuPage extends StatelessWidget {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.only(
-                          top: 40,
-                          bottom: 30,
+                          top: 10,
+
                         ),
                         child: Text(
                           'Vin Diesel',
@@ -193,7 +192,7 @@ class MenuPage extends StatelessWidget {
                                       iconSize: 75,
                                       onPressed: () {
                                         Navigator.push(context,
-                                            MaterialPageRoute(builder: (context) => AddIncidence()));
+                                            MaterialPageRoute(builder: (context) => AddIncidenceForm()));
                                       }),
                                 ),
                               ],
