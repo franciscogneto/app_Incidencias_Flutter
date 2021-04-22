@@ -1,8 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'menu_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:loading/loading.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget{
+
+  @override
+  _LoginPage createState() => _LoginPage();
+
+}
+
+class _LoginPage extends State<LoginPage> {
+  String _email, _password;
+  final auth = FirebaseAuth.instance;
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,15 +30,15 @@ class LoginPage extends StatelessWidget {
             SizedBox(
               width: 128,
               height: 128,
-              child: Image.asset("assets/logo_facens.png"),
+              child: Image.asset("assets/2.gif"),
             ),
             SizedBox(
               height: 20,
             ),
             TextFormField(
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                labelText: "Ra",
+                labelText: "Email",
                 labelStyle: TextStyle(
                   color: Colors.black38,
                   fontWeight: FontWeight.w400,
@@ -32,6 +46,11 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               style: TextStyle(fontSize: 20),
+              onChanged: (value){
+                setState(() {
+                  _email = value.trim();
+                });
+              },
             ),
             SizedBox(
               height: 20,
@@ -48,6 +67,11 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               style: TextStyle(fontSize: 20),
+              onChanged: (value){
+                setState(() {
+                  _password = value.trim();
+                });
+              },
             ),
             SizedBox(
               height: 50,
@@ -73,7 +97,7 @@ class LoginPage extends StatelessWidget {
               ),
               child: SizedBox.expand(
                 //Toma todo o conteúdo do container
-                child: FlatButton(
+                child: RaisedButton(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment
                         .spaceBetween, //para alinhamento - space between para fazer espaço entre
@@ -98,16 +122,30 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () => {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MenuPage())),
+                  onPressed: () {
+                    /*Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MenuPage())),*/
+                    //auth.signInWithEmailAndPassword(email: _email, password: _password);
+                    try{
+                      auth.signInWithEmailAndPassword(email: _email, password: _password);
+                      if(auth.currentUser != null){
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => MenuPage(auth)));
+                        print('logou');
+                      } else {
+                        print('usuário inválido');
+                      }
+                    } on FirebaseAuthException catch (e) {
+                      print(e);
+                      print('logou');
+                    }
                   },
                 ),
               ),
             ),
           ],
         ),
-      ),
+      ), // primeiro container
     );
   }
 }

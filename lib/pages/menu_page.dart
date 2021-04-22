@@ -2,8 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'incidences_list_page.dart';
 import 'add_incidence.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:incidencias_app/pages/login_page.dart';
 
-class MenuPage extends StatelessWidget {
+
+class MenuPage extends StatefulWidget{
+
+  const MenuPage(this.auth);
+  final FirebaseAuth auth;
+  @override
+  _MenuPage createState() => _MenuPage();
+}
+
+class _MenuPage extends State<MenuPage> {
   final Colorblue = Colors.indigo;
   final String image = 'https://conteudo.imguol.com.br/c/entretenimento/13/2017/09/20/marcos-o-vin-diesel-brasileiro-1505924753054_v2_900x506.jpg.webp';
   @override
@@ -89,7 +101,7 @@ class MenuPage extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          'RA: XXXXX',
+                          widget.auth.currentUser.email,
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -213,8 +225,12 @@ class MenuPage extends StatelessWidget {
           title: Text('Perfil'),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.star),
-              onPressed: () {},
+              icon: Icon(Icons.logout),
+              onPressed: () {
+                widget.auth.signOut();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
             ),
           ],
           centerTitle: true,
