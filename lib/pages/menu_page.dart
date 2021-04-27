@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'incidences_list_page.dart';
@@ -9,7 +10,8 @@ import 'package:incidencias_app/pages/login_page.dart';
 
 class MenuPage extends StatefulWidget{
 
-  const MenuPage(this.auth);
+  const MenuPage(this.auth,this.user);
+  final QueryDocumentSnapshot user;
   final FirebaseAuth auth;
   @override
   _MenuPage createState() => _MenuPage();
@@ -101,7 +103,7 @@ class _MenuPage extends State<MenuPage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          widget.auth.currentUser.email,
+                          widget.user.id,
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -226,8 +228,8 @@ class _MenuPage extends State<MenuPage> {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.logout),
-              onPressed: () {
-                widget.auth.signOut();
+              onPressed: () async {
+                await widget.auth.signOut();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => LoginPage()));
               },

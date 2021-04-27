@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'menu_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget{
 
@@ -13,12 +15,12 @@ class LoginPage extends StatefulWidget{
 }
 
 class _LoginPage extends State<LoginPage> {
-  String _email, _password;
+  String _email,_password;
   final auth = FirebaseAuth.instance;
-
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -30,7 +32,7 @@ class _LoginPage extends State<LoginPage> {
             SizedBox(
               width: 128,
               height: 128,
-              child: Image.asset("assets/2.gif"),
+              //child: Image.asset("assets/2.gif"),
             ),
             SizedBox(
               height: 20,
@@ -48,7 +50,7 @@ class _LoginPage extends State<LoginPage> {
               style: TextStyle(fontSize: 20),
               onChanged: (value){
                 setState(() {
-                  _email = value.trim();
+                  this._email = value.trim();
                 });
               },
             ),
@@ -122,22 +124,57 @@ class _LoginPage extends State<LoginPage> {
                       ),
                     ],
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     /*Navigator.push(context,
                         MaterialPageRoute(builder: (context) => MenuPage())),*/
                     //auth.signInWithEmailAndPassword(email: _email, password: _password);
+
+                    //final String aux = _email;
+
                     try{
-                      auth.signInWithEmailAndPassword(email: _email, password: _password);
+                        //Get
+                        /* FirebaseFirestore.instance.collection('User')
+                        .get()
+                            .then((QuerySnapshot querySnapshot) {
+
+                          querySnapshot.docs.forEach((element) {});
+                        });*/
+                        //Set
+                        /*await FirebaseFirestore.instance.collection('User').doc('teste3').set({'ccc':'teste'}).then((value)=> print('ok ')).catchError((error)=> print('error'));*/
+                        
+                      await auth.signInWithEmailAndPassword(email: _email, password: _password);
                       if(auth.currentUser != null){
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => MenuPage(auth)));
+                        bool aux = false;
+                        QueryDocumentSnapshot user;
+                        await FirebaseFirestore.instance.collection('User')
+                            .get()
+                            .then((QuerySnapshot querySnapshot) {
+                          querySnapshot.docs.forEach((element) {
+                            if(element.id == _email){
+                              user = element;
+                              aux = true;
+                              print('não é primeira vez');
+                            }
+                          });
+                        });
+                        print(aux);
+                        if(!aux){
+                          await FirebaseFirestore.instance.collection('User').doc(_email).set({'CriationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now())}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
+                          await FirebaseFirestore.instance.collection('User')
+                              .get()
+                              .then((QuerySnapshot querySnapshot) {
+                                print('primeira vez');
+                                Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => MenuPage(auth,querySnapshot.docs.last)));
+                          });
+                        } else {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
+                        }
                         print('logou');
-                      } else {
-                        print('usuário inválido');
                       }
                     } on FirebaseAuthException catch (e) {
-                      print(e);
-                      print('logou');
+                      print('usuário inválido ou ocorreu erro: $e');
                     }
                   },
                 ),

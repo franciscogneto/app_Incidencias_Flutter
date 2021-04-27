@@ -1,7 +1,18 @@
-class User{
-  final String name;
-  final String ra;
-  final String pathToImage;
+import 'package:incidencias_app/models/Incidence.dart';
 
-  User(this.name,this.pathToImage,this.ra);
+
+class User{
+  final String email;
+  String name;
+  String ra;
+  String pathToImage;
+  List<Incidence> incidences;
+
+  User(this.email);
+
+  addIncidente(Incidence incidence){
+    incidences.add(incidence);
+  }
+
+
 }
