@@ -3,4 +3,6 @@ class Item{
   bool checked;
 
   Item({this.title,this.checked});
+
+  String toString() => "title: $title | value: $checked";
 }
