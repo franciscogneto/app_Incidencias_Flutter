@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:incidencias_app/pages/menu_page.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
@@ -9,6 +10,7 @@ import 'package:loading/loading.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   //await Firebase.initializeApp();
   runApp(MyApp());
 }

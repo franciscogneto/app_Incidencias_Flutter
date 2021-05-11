@@ -129,15 +129,6 @@ class _LoginPage extends State<LoginPage> {
         elevation: 10.0,
         onPressed: () async{
           try{
-            //Get
-            /* FirebaseFirestore.instance.collection('User')
-                        .get()
-                            .then((QuerySnapshot querySnapshot) {
-
-                          querySnapshot.docs.forEach((element) {});
-                        });*/
-            //Set
-            /*await FirebaseFirestore.instance.collection('User').doc('teste3').set({'ccc':'teste'}).then((value)=> print('ok ')).catchError((error)=> print('error'));*/
 
             await auth.signInWithEmailAndPassword(email: _email, password: _password);
             if(auth.currentUser != null){

@@ -42,8 +42,12 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app needs access to location when open.</string>
+    <string>necessário o acesso a localização para identificar o local da incidência</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>This app needs access to location when in the background.</string>
+    <string>necessário o acesso a localização para identificar o local da incidência</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Camera necessária para tirar foto da incidência</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Necessário o acesso a galeria para acessar a imagem</string>
 </dict>
 </plist>

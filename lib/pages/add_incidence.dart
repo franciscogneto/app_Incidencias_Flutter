@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:incidencias_app/models/Item.dart';
@@ -23,15 +25,20 @@ class AddIncidence extends StatelessWidget {
 
 class AddIncidenceForm extends StatefulWidget {
   var items = new List<Item>();
+
   int currentState;
-  AddIncidenceForm() {
+
+  AddIncidenceForm(){
     items = [];
     items.add(Item(title: 'Instalação elétrica', checked: false));
     items.add(Item(title: 'Estacionamento', checked: false));
     items.add(Item(title: 'Sala de Aula', checked: false));
     items.add(Item(title: 'Objeto quebrado', checked: false));
     items.add(Item(title: 'Objeto solto', checked: false));
+
     currentState = 0;
+
+
   }
 
   @override
@@ -40,14 +47,31 @@ class AddIncidenceForm extends StatefulWidget {
 
 class _AddIncidenceFormState extends State<AddIncidenceForm> {
   final _formKey = GlobalKey<FormState>();
-
   int _currentStep = 0;
   StepperType stepperType = StepperType.vertical;
   int totalStates = 4;
 
+  File _image;
+  final picker = ImagePicker();
+  Future getImage() async{
+    final image2 = await ImagePicker.platform.pickImage(source: ImageSource.camera);
+
+    //final image = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      _image = File(image2.path);
+    });
+
+
+
+    print(_image);
+
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Incidência"),
@@ -141,7 +165,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                               ),
                               color: Colors.indigo,
                               iconSize: 40,
-                              onPressed: (){}
+                              onPressed: getImage,
                           ),
                         ],
                       ),
@@ -174,6 +198,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                   ],
                 ),
               ), //ListView
+
             ], //Lista principal
           ),
         ),
@@ -181,6 +206,11 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
       //SingleChild
     );
   }
+
+
+
+
+
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -205,6 +235,9 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
     await Geolocator.getCurrentPosition().then((value) => position = value);
     return position;
   }
+
+
+
   switchStepsType() {
     setState(() => stepperType == StepperType.vertical
         ? stepperType = StepperType.horizontal
@@ -221,5 +254,24 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
 
   cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
+  }
+
+}
+
+
+class teste extends StatelessWidget {
+
+  const teste(this.image);
+  final image;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('aaaa'),
+      ),
+      body: Center(
+        child: Image.file(image),
+      ),
+    );
   }
 }
