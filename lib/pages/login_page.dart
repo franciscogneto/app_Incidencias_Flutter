@@ -14,7 +14,271 @@ class LoginPage extends StatefulWidget{
 
 }
 
+
+
 class _LoginPage extends State<LoginPage> {
+  String _email,_password;
+  final auth = FirebaseAuth.instance;
+
+  _buildEmailContext(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Email',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'OpenSans',
+          ),
+        ),
+        SizedBox(height: 10,),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: Color(0xFF6CA8F1),
+            borderRadius: BorderRadius.circular(10.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6.0,
+                offset: Offset(15, 15),
+              ),
+            ],
+          ),
+          height: 60,
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            style: TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14),
+              prefixIcon: Icon(Icons.email, color: Colors.white,),
+              hintText: 'Enter your email',
+              hintStyle: TextStyle(
+                color: Colors.white54,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+            onChanged: (value){
+              setState(() {
+                _email = value.trim();
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+  _buildPasswordContext(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Password',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'OpenSans',
+          ),
+        ),
+        SizedBox(height: 10,),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: Color(0xFF6CA8F1),
+            borderRadius: BorderRadius.circular(10.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6.0,
+                offset: Offset(15, 15),
+              ),
+            ],
+          ),
+          height: 60,
+          child: TextField(
+            obscureText: true,
+            keyboardType: TextInputType.visiblePassword,
+            style: TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14),
+              prefixIcon: Icon(Icons.lock, color: Colors.white,),
+              hintText: 'Enter your password',
+              hintStyle: TextStyle(
+                color: Colors.white54,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+            onChanged: (value){
+              setState(() {
+                _password = value.trim();
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+  _buildSignInButton(context){
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25.0),
+      width: MediaQuery.of(context).size.width/2,
+      child: RaisedButton(
+        elevation: 10.0,
+        onPressed: () async{
+          try{
+            //Get
+            /* FirebaseFirestore.instance.collection('User')
+                        .get()
+                            .then((QuerySnapshot querySnapshot) {
+
+                          querySnapshot.docs.forEach((element) {});
+                        });*/
+            //Set
+            /*await FirebaseFirestore.instance.collection('User').doc('teste3').set({'ccc':'teste'}).then((value)=> print('ok ')).catchError((error)=> print('error'));*/
+
+            await auth.signInWithEmailAndPassword(email: _email, password: _password);
+            if(auth.currentUser != null){
+              bool aux = false;
+              QueryDocumentSnapshot user;
+              await FirebaseFirestore.instance.collection('User')
+                  .get()
+                  .then((QuerySnapshot querySnapshot) {
+                querySnapshot.docs.forEach((element) {
+                  if(element.id == _email){
+                    user = element;
+                    aux = true;
+                    print('não é primeira vez');
+                  }
+                });
+              });
+              print(aux);
+              if(!aux){
+                await FirebaseFirestore.instance.collection('User').doc(_email).set({'CriationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now())}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
+                await FirebaseFirestore.instance.collection('User')
+                    .get()
+                    .then((QuerySnapshot querySnapshot) {
+                  print('primeira vez');
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MenuPage(auth,querySnapshot.docs.last)));
+                });
+              } else {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
+              }
+              print('logou');
+            }
+          } on FirebaseAuthException catch (e) {
+            print('usuário inválido ou ocorreu erro: $e');
+          }
+        },
+        padding: EdgeInsets.all(15.0),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: Colors.white,
+        child: Text(
+          'Sing In',
+          style: TextStyle(
+            color: Color(0xFF527DAA),
+            letterSpacing: 1.5,
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'OpenSans',
+          ),
+        ),
+      ),
+    );
+  }
+  _buildSignOutButton(context){
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5.0),
+      width: MediaQuery.of(context).size.width/2,
+      child: RaisedButton(
+        elevation: 10.0,
+        onPressed: () => print('aaaa'),
+        padding: EdgeInsets.all(15.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: Colors.white,
+        child: Text(
+          'Sing Up',
+          style: TextStyle(
+            color: Color(0xFF527DAA),
+            letterSpacing: 1.5,
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'OpenSans',
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF73AEF5),
+                  Color(0xFF61A4F1),
+                  Color(0xFF478DE0),
+                  Color(0xFF398AE5),
+                ],
+                stops: [0.1,0.4,0.7,0.9],
+              ),
+            ),
+          ),
+          Container(
+
+            height: double.infinity,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                horizontal: 40,
+                vertical: 120,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'OpenSans',
+                      fontSize: 30,
+                    ),
+                  ),
+                  SizedBox(height: 40,),
+                  _buildEmailContext(),
+                  SizedBox(height: 20,),
+                  _buildPasswordContext(),
+                  SizedBox(height: 30,),
+                  _buildSignInButton(context),
+                  _buildSignOutButton(context),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+  }
+}
+
+/*class _LoginPage extends State<LoginPage> {
   String _email,_password;
   final auth = FirebaseAuth.instance;
 
@@ -131,51 +395,7 @@ class _LoginPage extends State<LoginPage> {
 
                     //final String aux = _email;
 
-                    try{
-                        //Get
-                        /* FirebaseFirestore.instance.collection('User')
-                        .get()
-                            .then((QuerySnapshot querySnapshot) {
 
-                          querySnapshot.docs.forEach((element) {});
-                        });*/
-                        //Set
-                        /*await FirebaseFirestore.instance.collection('User').doc('teste3').set({'ccc':'teste'}).then((value)=> print('ok ')).catchError((error)=> print('error'));*/
-                        
-                      await auth.signInWithEmailAndPassword(email: _email, password: _password);
-                      if(auth.currentUser != null){
-                        bool aux = false;
-                        QueryDocumentSnapshot user;
-                        await FirebaseFirestore.instance.collection('User')
-                            .get()
-                            .then((QuerySnapshot querySnapshot) {
-                          querySnapshot.docs.forEach((element) {
-                            if(element.id == _email){
-                              user = element;
-                              aux = true;
-                              print('não é primeira vez');
-                            }
-                          });
-                        });
-                        print(aux);
-                        if(!aux){
-                          await FirebaseFirestore.instance.collection('User').doc(_email).set({'CriationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now())}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
-                          await FirebaseFirestore.instance.collection('User')
-                              .get()
-                              .then((QuerySnapshot querySnapshot) {
-                                print('primeira vez');
-                                Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => MenuPage(auth,querySnapshot.docs.last)));
-                          });
-                        } else {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
-                        }
-                        print('logou');
-                      }
-                    } on FirebaseAuthException catch (e) {
-                      print('usuário inválido ou ocorreu erro: $e');
-                    }
                   },
                 ),
               ),
@@ -186,3 +406,4 @@ class _LoginPage extends State<LoginPage> {
     );
   }
 }
+*/

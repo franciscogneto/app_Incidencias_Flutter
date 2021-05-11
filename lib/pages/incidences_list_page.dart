@@ -37,7 +37,7 @@ class _IncidencesListState extends State<IncidencesList> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Minhas incidências'),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Color(0xFF398AE5),
       ),
       body: Column(
         children: <Widget>[

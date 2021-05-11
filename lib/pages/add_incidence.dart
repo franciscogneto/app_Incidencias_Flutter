@@ -52,7 +52,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
       appBar: AppBar(
         title: Text("Incidência"),
         centerTitle: true,
-        backgroundColor: Colors.indigo,
+        backgroundColor: Color(0xFF398AE5),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_outlined),
           onPressed: (){
@@ -162,8 +162,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                               iconSize: 40,
                               onPressed: () async{
                                 Future<Position> response = _determinePosition();
-                              response.then((value) => print(value));
-
+                              response.then((value) => print(value.toJson()));
                               }
                           ),
                         ],

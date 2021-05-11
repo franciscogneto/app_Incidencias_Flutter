@@ -37,6 +37,17 @@ class _MenuPage extends State<MenuPage> {
                   bottomRight: Radius.circular(25),
                   bottomLeft: Radius.circular(25),
                 ),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF73AEF5),
+                    Color(0xFF61A4F1),
+                    Color(0xFF478DE0),
+                    Color(0xFF398AE5),
+                  ],
+                  stops: [0.1,0.4,0.7,0.9],
+                ),
               ),
               child: Column(
                 children: <Widget>[
@@ -168,7 +179,7 @@ class _MenuPage extends State<MenuPage> {
                               decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50)),
-                                color: Colorblue,
+                                color: Color(0xFF398AE5),
                               ),
                               child: IconButton(
                                   icon: Icon(Icons.list),
@@ -198,7 +209,7 @@ class _MenuPage extends State<MenuPage> {
                                   decoration: BoxDecoration(
                                     borderRadius:
                                     BorderRadius.all(Radius.circular(50)),
-                                    color: Colorblue,
+                                    color: Color(0xFF398AE5),
                                   ),
                                   child: IconButton(
                                       icon: Icon(Icons.add),
@@ -222,7 +233,7 @@ class _MenuPage extends State<MenuPage> {
           ],
         ),
         appBar: AppBar(
-          backgroundColor: Colorblue,
+          backgroundColor: Color(0xFF73AEF5),
           elevation: 0,
           title: Text('Perfil'),
           actions: <Widget>[
