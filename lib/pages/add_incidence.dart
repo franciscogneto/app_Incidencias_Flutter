@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:incidencias_app/models/Item.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddIncidence extends StatelessWidget {
   String type;
@@ -55,18 +56,10 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
   final picker = ImagePicker();
   Future getImage() async{
     final image2 = await ImagePicker.platform.pickImage(source: ImageSource.camera);
-
-    //final image = await picker.getImage(source: ImageSource.camera);
-
     setState(() {
       _image = File(image2.path);
     });
-
-
-
     print(_image);
-
-
   }
 
 
@@ -248,7 +241,20 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
     setState(() => _currentStep = step);
   }
 
-  continued() {
+  continued() async {
+    if(_currentStep + 1 == totalStates){
+        try{
+        await FirebaseStorage.instance.ref('images/aa/teste.jpg').putFile(_image);
+        } on FirebaseException catch (e){
+          print(e.code);
+        }
+        /*firebaseStorage uploadTask = firebaseStorageRef.putFile(_image).then((e) => print(e.toString()));
+        StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+        taskSnapshot.ref.getDownloadURL().then(
+              (value) => print("Done: $value"),
+        );*/
+
+    }
     _currentStep < this.totalStates - 1 ? setState(() => _currentStep += 1) : null;
   }
 
