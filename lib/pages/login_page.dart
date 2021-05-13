@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget{
 
 
 class _LoginPage extends State<LoginPage> {
-  String _email,_password;
+  String _email,_password,_erroMessage = '';
   final auth = FirebaseAuth.instance;
 
   _buildEmailContext(){
@@ -129,7 +129,6 @@ class _LoginPage extends State<LoginPage> {
         elevation: 10.0,
         onPressed: () async{
           try{
-
             await auth.signInWithEmailAndPassword(email: _email, password: _password);
             if(auth.currentUser != null){
               bool aux = false;
@@ -142,27 +141,23 @@ class _LoginPage extends State<LoginPage> {
                     user = element;
                     aux = true;
                     print('não é primeira vez');
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
                   }
                 });
               });
-              print(aux);
-              if(!aux){
-                await FirebaseFirestore.instance.collection('User').doc(_email).set({'CriationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now())}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
-                await FirebaseFirestore.instance.collection('User')
-                    .get()
-                    .then((QuerySnapshot querySnapshot) {
-                  print('primeira vez');
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MenuPage(auth,querySnapshot.docs.last)));
-                });
-              } else {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
-              }
-              print('logou');
             }
           } on FirebaseAuthException catch (e) {
-            print('usuário inválido ou ocorreu erro: $e');
+            setState(() {
+              if(_password.trim().length == 0){
+                _erroMessage = 'incorrect password';
+              } else if (e.code == 'unknown'){
+                _erroMessage = 'password or email incorrect';
+              }
+              else {
+                _erroMessage = e.code;
+              }
+            });
           }
         },
         padding: EdgeInsets.all(15.0),
@@ -189,7 +184,38 @@ class _LoginPage extends State<LoginPage> {
       width: MediaQuery.of(context).size.width/2,
       child: RaisedButton(
         elevation: 10.0,
-        onPressed: () => print('aaaa'),
+        onPressed: () async{
+          String message;
+          try {
+           UserCredential user = await auth.createUserWithEmailAndPassword(
+                email: _email, password: _password);
+           if(UserCredential != null){
+             await FirebaseFirestore.instance.collection('User').doc(_email).set({'CriationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now())}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
+             await FirebaseFirestore.instance.collection('User')
+                 .get()
+                 .then((QuerySnapshot querySnapshot) {
+               print('primeira vez');
+               Navigator.push(context,
+                   MaterialPageRoute(builder: (context) => MenuPage(auth,querySnapshot.docs.first)));//Falta pegar o documento pela chave id ou no caso o email
+             });
+           }
+           else {
+             print('Erro inesperado');
+           }
+          } on FirebaseAuthException catch (e) {
+            setState(() {
+              if(_password.trim().length == 0){
+                _erroMessage = 'incorrect password';
+              } else if (e.code == 'unknown'){
+                _erroMessage = 'password or email incorrect';
+              }
+              else {
+                _erroMessage = e.code;
+              }
+            });
+            print(e.code);
+          }
+          },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -258,6 +284,17 @@ class _LoginPage extends State<LoginPage> {
                   SizedBox(height: 30,),
                   _buildSignInButton(context),
                   _buildSignOutButton(context),
+                  SizedBox(height: 30,),
+                  Text(
+                    _erroMessage.toString(),
+                    style: TextStyle(
+                      color: Colors.amber,
+                      letterSpacing: 1.5,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
+                    ),
+                  ),
                 ],
               ),
             ),
