@@ -128,24 +128,15 @@ class _LoginPage extends State<LoginPage> {
       child: RaisedButton(
         elevation: 10.0,
         onPressed: () async{
+          //await FirebaseFirestore.instance.collection('User').doc(_email).get().then((value) => print(value.data().toString()));
           try{
             await auth.signInWithEmailAndPassword(email: _email, password: _password);
             if(auth.currentUser != null){
-              bool aux = false;
-              QueryDocumentSnapshot user;
-              await FirebaseFirestore.instance.collection('User')
-                  .get()
-                  .then((QuerySnapshot querySnapshot) {
-                querySnapshot.docs.forEach((element) {
-                  if(element.id == _email){
-                    user = element;
-                    aux = true;
-                    print('não é primeira vez');
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
-                  }
-                });
-              });
+
+              DocumentSnapshot user;
+              await FirebaseFirestore.instance.collection('User').doc(_email).get().then((value) => user = value);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
             }
           } on FirebaseAuthException catch (e) {
             setState(() {
@@ -189,15 +180,13 @@ class _LoginPage extends State<LoginPage> {
           try {
            UserCredential user = await auth.createUserWithEmailAndPassword(
                 email: _email, password: _password);
-           if(UserCredential != null){
-             await FirebaseFirestore.instance.collection('User').doc(_email).set({'CriationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now())}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
-             await FirebaseFirestore.instance.collection('User')
-                 .get()
-                 .then((QuerySnapshot querySnapshot) {
-               print('primeira vez');
-               Navigator.push(context,
-                   MaterialPageRoute(builder: (context) => MenuPage(auth,querySnapshot.docs.first)));//Falta pegar o documento pela chave id ou no caso o email
-             });
+
+           if(user != null){
+             await FirebaseFirestore.instance.collection('User').doc(_email).set({'creationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now()),'incidences':[]}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
+             DocumentSnapshot user;
+             await FirebaseFirestore.instance.collection('User').doc(_email).get().then((value) => user = value);
+             Navigator.push(context,
+                 MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
            }
            else {
              print('Erro inesperado');
@@ -213,7 +202,7 @@ class _LoginPage extends State<LoginPage> {
                 _erroMessage = e.code;
               }
             });
-            print(e.code);
+
           }
           },
         padding: EdgeInsets.all(15.0),

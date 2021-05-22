@@ -6,13 +6,20 @@ import 'add_incidence.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:incidencias_app/pages/login_page.dart';
+import 'package:incidencias_app/models/Util.dart';
+import 'package:incidencias_app/services/services.dart';
 
 
 class MenuPage extends StatefulWidget{
 
   const MenuPage(this.auth,this.user);
-  final QueryDocumentSnapshot user;
+  final DocumentSnapshot user;
+
   final FirebaseAuth auth;
+
+
+
+
   @override
   _MenuPage createState() => _MenuPage();
 }
@@ -20,8 +27,25 @@ class MenuPage extends StatefulWidget{
 class _MenuPage extends State<MenuPage> {
   final Colorblue = Colors.indigo;
   final String image = 'https://conteudo.imguol.com.br/c/entretenimento/13/2017/09/20/marcos-o-vin-diesel-brasileiro-1505924753054_v2_900x506.jpg.webp';
+  DocumentSnapshot data;
+  Future<void> getData() async {
+    DocumentSnapshot aux;
+    await FirebaseFirestore.instance.collection('User').doc('teste12@teste123.com').get().then((value) { aux = value;});
+      return aux;
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    /*Future<DocumentSnapshot> teste = services().getDocumentFromUserByEmail('teste12@teste123.com');
+    teste.then((value) => print(Util.fromJson(value.data()).incidences));
+    Future<int> cont = services().getCountIncidentesByEmail('teste12@teste123.com');
+    cont.then((value) => print('quantidade: '+value.toString()));*/
+    /*getData();
+    if(data!=null) {
+      Util teste = Util.fromJson(data.data());
+      print(teste.toJson());
+    }*/
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Menu',
@@ -217,7 +241,7 @@ class _MenuPage extends State<MenuPage> {
                                       iconSize: 75,
                                       onPressed: () {
                                         Navigator.push(context,
-                                            MaterialPageRoute(builder: (context) => AddIncidenceForm()));
+                                            MaterialPageRoute(builder: (context) => AddIncidenceForm(widget.auth,widget.user)));
                                       }),
                                 ),
                               ],
