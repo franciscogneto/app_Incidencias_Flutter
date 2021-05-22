@@ -2,17 +2,21 @@ import 'package:incidencias_app/models/Incidence.dart';
 
 
 class User{
-  final String email;
-  String name;
-  String ra;
-  String pathToImage;
+
+  DateTime CreationData;
+  //String ra;
+  //String pathToImage;
   List<Incidence> incidences;
 
-  User(this.email);
+  User(this.CreationData);
 
   addIncidente(Incidence incidence){
     incidences.add(incidence);
   }
 
+  Map<String,dynamic> toJson() =>{
+    'CreationData':this.CreationData,
+    ''
+  };
 
 }

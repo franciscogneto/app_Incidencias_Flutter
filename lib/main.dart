@@ -41,7 +41,6 @@ class _MyAppState extends State<MyApp>{
             return Text('Erro');
           }else if(snapshot.hasData) {
             return LoginPage();
-
           } else {
             return Center(
               child: Loading(indicator: BallPulseIndicator(), size: 100.0,color: Colors.indigo),
