@@ -1,12 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:incidencias_app/models/Incidence.dart';
 import 'package:incidencias_app/models/Item.dart';
+import 'package:incidencias_app/models/Util.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:incidencias_app/services/services.dart';
 
-class AddIncidence extends StatelessWidget {
+
+/*class AddIncidence extends StatelessWidget {
   String type;
 
   @override
@@ -22,36 +29,38 @@ class AddIncidence extends StatelessWidget {
       ),
     );
   }
-}
+}*/
 
 class AddIncidenceForm extends StatefulWidget {
   var items = new List<Item>();
 
   int currentState;
-
-  AddIncidenceForm(){
+  AddIncidenceForm(this.auth,this.user){
     items = [];
     items.add(Item(title: 'Instalação elétrica', checked: false));
     items.add(Item(title: 'Estacionamento', checked: false));
     items.add(Item(title: 'Sala de Aula', checked: false));
     items.add(Item(title: 'Objeto quebrado', checked: false));
     items.add(Item(title: 'Objeto solto', checked: false));
-
     currentState = 0;
-
-
   }
+  final DocumentSnapshot user;
+  final FirebaseAuth auth;
+
 
   @override
   _AddIncidenceFormState createState() => _AddIncidenceFormState();
+
+
 }
 
 class _AddIncidenceFormState extends State<AddIncidenceForm> {
   final _formKey = GlobalKey<FormState>();
+  String _erroMessage = '', _textField = '', _response = '';
   int _currentStep = 0;
   StepperType stepperType = StepperType.vertical;
   int totalStates = 4;
-
+  Position localization;
   File _image;
   final picker = ImagePicker();
   Future getImage() async{
@@ -59,7 +68,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
     setState(() {
       _image = File(image2.path);
     });
-    print(_image);
+
   }
 
 
@@ -104,7 +113,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index){//como deve construir esses itens na tela
                               final item = widget.items[index];
-                              print(index);
+
                               return CheckboxListTile(
                                 title: Text(item.title),
                                 key: Key(item.title),
@@ -114,7 +123,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                                   setState(() {
                                     item.checked = value;
                                   });
-                                  print(item.toString());
+
                                 },
                               );
                             },
@@ -140,6 +149,11 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                               ),
                             ),
                             style: TextStyle(fontSize: 15),
+                            onChanged: (text){
+                              setState(() {
+                                _textField = text;
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -178,8 +192,8 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                               color: Colors.indigo,
                               iconSize: 40,
                               onPressed: () async{
-                                Future<Position> response = _determinePosition();
-                              response.then((value) => print(value.toJson()));
+                                Future<Position> position = _determinePosition();
+                              position.then((value) => localization = value);
                               }
                           ),
                         ],
@@ -190,8 +204,18 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                     ),
                   ],
                 ),
-              ), //ListView
+              ),
+              Text(
+                _response,
+                style: TextStyle(
+                  color: Colors.amber,
+                  letterSpacing: 1.5,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'OpenSans',
+                ),
 
+              ),//ListView
             ], //Lista principal
           ),
         ),
@@ -242,18 +266,38 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
   }
 
   continued() async {
+
     if(_currentStep + 1 == totalStates){
+      List<Item> getTrueItems = new List<Item>();
+      int count;
+      await services().getCountIncidentesByEmail(widget.auth.currentUser.email).then((value) => count = value);
+      String path = 'images/' + widget.user.id + '/Incidence_'+count.toString()+'.jpg'; //Falta colocar o numero da incidencia no final do nome
+      widget.items.forEach((element) {
+        if(element.checked){
+          getTrueItems.add(element);
+        }
+      });
+      Incidence data = Incidence(
+        description: _textField,
+        status: 2,
+        type: 'Incidência',
+        date: new DateTime.now(),
+        items: getTrueItems,
+        pathToImage: path,
+        location: localization,
+      );
+      services().addIncidenceByEmail(data, widget.auth.currentUser.email, _image, path).then((value) => _response = value);
+
+
+
+
+      /*await FirebaseFirestore.instance.collection('User').doc(widget.user.id).set(util.toJson()).then((value) => print('ok'));
+
         try{
-        await FirebaseStorage.instance.ref('images/aa/teste.jpg').putFile(_image);
+        await FirebaseStorage.instance.ref(path).putFile(_image);
         } on FirebaseException catch (e){
           print(e.code);
-        }
-        /*firebaseStorage uploadTask = firebaseStorageRef.putFile(_image).then((e) => print(e.toString()));
-        StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
-        taskSnapshot.ref.getDownloadURL().then(
-              (value) => print("Done: $value"),
-        );*/
-
+        }*/
     }
     _currentStep < this.totalStates - 1 ? setState(() => _currentStep += 1) : null;
   }
