@@ -9,16 +9,11 @@ import 'package:incidencias_app/pages/login_page.dart';
 import 'package:incidencias_app/models/Util.dart';
 import 'package:incidencias_app/services/services.dart';
 
-
-class MenuPage extends StatefulWidget{
-
-  const MenuPage(this.auth,this.user);
+class MenuPage extends StatefulWidget {
+  const MenuPage(this.auth, this.user);
   final DocumentSnapshot user;
 
   final FirebaseAuth auth;
-
-
-
 
   @override
   _MenuPage createState() => _MenuPage();
@@ -26,14 +21,20 @@ class MenuPage extends StatefulWidget{
 
 class _MenuPage extends State<MenuPage> {
   final Colorblue = Colors.indigo;
-  final String image = 'https://conteudo.imguol.com.br/c/entretenimento/13/2017/09/20/marcos-o-vin-diesel-brasileiro-1505924753054_v2_900x506.jpg.webp';
+  final String image =
+      'https://conteudo.imguol.com.br/c/entretenimento/13/2017/09/20/marcos-o-vin-diesel-brasileiro-1505924753054_v2_900x506.jpg.webp';
   DocumentSnapshot data;
   Future<void> getData() async {
     DocumentSnapshot aux;
-    await FirebaseFirestore.instance.collection('User').doc('teste12@teste123.com').get().then((value) { aux = value;});
-      return aux;
+    await FirebaseFirestore.instance
+        .collection('User')
+        .doc('teste12@teste123.com')
+        .get()
+        .then((value) {
+      aux = value;
+    });
+    return aux;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -70,119 +71,102 @@ class _MenuPage extends State<MenuPage> {
                     Color(0xFF478DE0),
                     Color(0xFF398AE5),
                   ],
-                  stops: [0.1,0.4,0.7,0.9],
+                  stops: [0.1, 0.4, 0.7, 0.9],
                 ),
               ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(top: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceBetween, //incidencias / imagem / em aberto
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(left: 16),
-                          child: Column(
-                            children: <Widget>[
-                              Text(
-                                'Incidencias',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                '12',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: 175,
-                          width: 175,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(100)),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(image),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(right: 16),
-                          child: Column(
-                            children: <Widget>[
-                              Text(
-                                'em aberto',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                '12',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 25),
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          widget.user.id,
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: 10,
-
-                        ),
-                        child: Text(
-                          'Vin Diesel',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Text(
+                        widget.user.id,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'OpenSans',
                         ),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, //incidencias / imagem / em aberto
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          auxText(25, 'OpenSans', 'Total de incidências'),
+
+                          FutureBuilder(
+                              future: services().getUtilDataFromUserByEmail(widget.auth.currentUser.email),
+                              builder: (context,data){
+                                if(data.hasData){
+                                  return auxText(25, 'OpenSans', data.data.incidences.length.toString());
+                                } else if (data.connectionState == ConnectionState.waiting){
+                                  return auxText(20, 'OpenSans', 'Loading...');
+                                }
+                                else {
+                                  return auxText(20, 'OpenSans', 'Error, please try later');
+                                }
+                              }),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Column(
                       children: <Widget>[
-                        Icon(
-                          Icons.emoji_events_rounded,
-                          color: Colors.yellow,
-                          size: 75,
-                        ),
-                        Text(
-                          '6/10',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                          ),
-                        ),
+                        auxText(25, 'OpenSans', 'Incidência em aberto'),
+                        FutureBuilder(
+                            future: services().getUtilDataFromUserByEmail(widget.auth.currentUser.email),
+                            builder: (context,data){
+                              if(data.hasData){
+                                int qtd = 0;
+                                data.data.incidences.forEach((element){
+                                  if(element.status == 2)
+                                    qtd++;
+                                });
+                                return auxText(25, 'OpenSans', qtd.toString());
+                              } else if (data.connectionState == ConnectionState.waiting){
+                                return auxText(20, 'OpenSans', 'Loading...');
+                              }
+                              else {
+                                return auxText(20, 'OpenSans', 'Error, please try later');
+                              }
+                            }),
                       ],
                     ),
+                  ]),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.emoji_events_rounded,
+                        color: Colors.yellow,
+                        size: 75,
+                      ),
+                      FutureBuilder(
+                          future: services().getUtilDataFromUserByEmail(widget.auth.currentUser.email),
+                          builder: (context,data){
+                            if(data.hasData){
+                              int qtd = 0;
+                              data.data.incidences.forEach((element){
+                                if(element.status == 1)
+                                  qtd++;
+                              });
+                              print(qtd);
+                              int rest = qtd%5;
+                              int result = (qtd/5).toInt();
+                              return auxText(20, 'OpenSans', '$rest/5  ($result)' );
+                            } else if (data.connectionState == ConnectionState.waiting){
+                              return auxText(20, 'OpenSans', 'Loading...');
+                            }
+                            else {
+                              return auxText(20, 'OpenSans', 'Error, please try later');
+                            }
+                          }),
+                    ],
                   ),
                 ],
               ),
@@ -194,26 +178,29 @@ class _MenuPage extends State<MenuPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.only(top: 25,left: 25),
+                      padding: EdgeInsets.only(top: 25, left: 25),
                       child: Column(
                         children: <Widget>[
                           Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                                color: Color(0xFF398AE5),
-                              ),
-                              child: IconButton(
-                                  icon: Icon(Icons.list),
-                                  color: Colors.white,
-                                  iconSize: 75,
-                                  onPressed: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) => IncidencesList()));
-                                  }),
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                              color: Color(0xFF398AE5),
                             ),
+                            child: IconButton(
+                                icon: Icon(Icons.list),
+                                color: Colors.white,
+                                iconSize: 75,
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              IncidencesList()));
+                                }),
+                          ),
                         ],
                       ),
                     ),
@@ -224,15 +211,13 @@ class _MenuPage extends State<MenuPage> {
                           Padding(
                             padding: EdgeInsets.only(right: 25),
                             child: Column(
-
                               children: <Widget>[
-
                                 Container(
                                   height: 100,
                                   width: 100,
                                   decoration: BoxDecoration(
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
+                                        BorderRadius.all(Radius.circular(50)),
                                     color: Color(0xFF398AE5),
                                   ),
                                   child: IconButton(
@@ -240,8 +225,13 @@ class _MenuPage extends State<MenuPage> {
                                       color: Colors.white,
                                       iconSize: 75,
                                       onPressed: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(builder: (context) => AddIncidenceForm(widget.auth,widget.user)));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddIncidenceForm(
+                                                        widget.auth,
+                                                        widget.user)));
                                       }),
                                 ),
                               ],
@@ -277,3 +267,26 @@ class _MenuPage extends State<MenuPage> {
   }
 }
 
+class auxText extends StatelessWidget {
+  auxText(double size, String family, String content){
+    this.fontFamily = family;
+    this.fontSize = size;
+    this.content = content;
+  }
+  double fontSize;
+  String fontFamily;
+  String content;
+
+  @override
+  Widget build(BuildContext context) {
+  return Text(
+    content,
+    style: TextStyle(
+      color: Colors.white,
+      fontSize: fontSize,
+      fontFamily: fontFamily,
+    ),
+  );
+  }
+
+}

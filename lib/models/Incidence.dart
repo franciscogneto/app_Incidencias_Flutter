@@ -33,6 +33,13 @@ class Incidence{
    };
 
   static Incidence fromJson(Map<String,dynamic> json){
+    json['location']['accuracy'] = json['location']['accuracy'] + 0.0;
+    json['location']['latitude'] = json['location']['latitude'] + 0.0;
+    json['longitude'] = json['location']['longitude'] + 0.0;
+    json['location']['speed_accuracy'] = json['location']['speed_accuracy'] + 0.0;
+    json['location']['altitude'] = json['location']['altitude'] + 0.0;
+    json['location']['heading'] = json['location']['heading'] + 0.0;
+    json['location']['speed'] = json['location']['speed'] + 0.0;
 
     final Incidence aux = new Incidence(
       location: Position.fromMap(json['location']),
