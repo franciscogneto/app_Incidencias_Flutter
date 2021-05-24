@@ -2,29 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:incidencias_app/models/Incidence.dart';
 import 'package:incidencias_app/pages/incidence_detail.dart';
+import 'package:incidencias_app/services/services.dart';
 import 'package:intl/intl.dart';
-
+import 'package:loading/indicator/ball_pulse_indicator.dart';
+import 'package:loading/loading.dart';
 
 class IncidencesList extends StatefulWidget {
-  var incidences = new List<Incidence>();
-
-  IncidencesList() {
-    incidences = [];
-    incidences.add(Incidence(
-        type: 'matutenção',
-        description: 'na rua perto do prédio C',
-        status: 2));
-    incidences.add(Incidence(
-        type: 'quebrado', description: 'Cano perto do prédio K', status: 2));
-    incidences.add(Incidence(
-        type: 'verificação',
-        description: 'Computador 2 do laboratório A',
-        status: 1));
-    incidences.add(Incidence(
-        type: 'Corrigir',
-        description: 'gramado ruim',
-        status: 3));
-  }
+  final String email;
+  const IncidencesList(this.email);
 
   @override
   _IncidencesListState createState() => _IncidencesListState();
@@ -33,25 +18,64 @@ class IncidencesList extends StatefulWidget {
 class _IncidencesListState extends State<IncidencesList> {
   @override
   Widget build(BuildContext context) {
-    print(widget.incidences);
+    //print(widget.incidences);
     return Scaffold(
       appBar: AppBar(
         title: Text('Minhas incidências'),
         backgroundColor: Color(0xFF398AE5),
       ),
-      body: Column(
-        children: <Widget>[
-          ListView.builder(
-            itemCount: widget.incidences.length,
-            shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
-              //como deve construir esses itens na tela
-              final item = widget.incidences[index];
-              return IncidenceWidget(item);
-            },
-          ),
-        ],
-      ),
+      body:
+          FutureBuilder(
+              future: services().getUtilDataFromUserByEmail(widget.email),
+              builder: (context, data) {
+                if (data.hasData) {
+                  return ListView.builder(
+                    itemCount: data.data.incidences.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      final item = data.data.incidences[index];
+                      return IncidenceWidget(item);
+                    },
+                  );
+                } else if (data.connectionState == ConnectionState.waiting) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Loading(
+                            indicator: BallPulseIndicator(),
+                            size: 100,
+                            color: Color(0xFF398AE5),
+                          ),
+                        ],
+                      )
+                    ],
+                  );
+                } else {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Error, please try again later',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontFamily: 'OpenSans',
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  );
+                }
+              }),
+
+
     );
   }
 }
@@ -75,7 +99,7 @@ class IncidenceWidget extends StatelessWidget {
       title: Text(f),
       subtitle: Text(item.type),
       trailing: Icon(Icons.circle, color: color),
-      onTap: (){
+      onTap: () {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => IncidenceDetail(item)));
       },

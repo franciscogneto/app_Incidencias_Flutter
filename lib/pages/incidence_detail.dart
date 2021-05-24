@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:incidencias_app/models/Incidence.dart';
+import 'package:incidencias_app/services/services.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
+import 'package:loading/loading.dart';
 
 class IncidenceDetail extends StatelessWidget {
   const IncidenceDetail(this.item);
@@ -19,13 +22,13 @@ class IncidenceDetail extends StatelessWidget {
       text = 'Em andamento';
       icon = Icon(
         Icons.timelapse,
-        color: Colors.indigo,
+        color: Color(0xFF398AE5),
       );
     } else {
       text = 'Incidência incorreta';
       icon = Icon(
         Icons.sentiment_dissatisfied_sharp,
-        color: Colors.indigo,
+        color: Color(0xFF398AE5),
       );
     }
     return Scaffold(
@@ -37,23 +40,144 @@ class IncidenceDetail extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-
-              Text('DATA'),
-              Text(item.date.toString()),
-              SizedBox(height: 50,),
-              Text('TIPO'),
-              Text(item.type),
-              SizedBox(height: 50,),
-              Text('DESCRICAO'),
-              Text(item.description),
-              SizedBox(height: 50,),
-              Text('STATUS'),
-              Text(text),
-              icon
+              Item(item.date.toString(), 'DATA'),
+              Item(item.type, 'TIPO'),
+              Item(item.description, 'DESCRIÇÃO'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      Text('IMAGEM'),
+                      IconButton(
+                          icon: Icon(Icons.image, color: Color(0xFF398AE5)),
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => ShowImageFromFireBase(item.pathToImage)));
+                          }),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      Text('STATUS'),
+                      Text(text),
+                      icon,
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class Item extends StatelessWidget {
+  Item(String content, String title) {
+    this.title = title;
+    this.content = content;
+  }
+
+  String title;
+  String content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Column(
+          children: [
+            Text(title),
+            Text(content),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class ShowImageFromFireBase extends StatelessWidget {
+  ShowImageFromFireBase(String path) {
+    this.path = path;
+  }
+  String path;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Incidência"),
+        centerTitle: true,
+        backgroundColor: Color(0xFF398AE5),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_outlined),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FutureBuilder(
+              future: services().getImageByPath(path),
+              builder: (context, data) {
+                if (data.connectionState == ConnectionState.waiting) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Loading(
+                            indicator: BallPulseIndicator(),
+                            size: 100,
+                            color: Color(0xFF398AE5),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else if (data.hasData) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width / 1.25,
+                            height: MediaQuery.of(context).size.height / 1.25,
+                            child: Image.memory(data.data),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Error, pleasy try again later'),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+              }),
         ],
       ),
     );

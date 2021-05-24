@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -44,6 +46,12 @@ class services {
       });
     }
     return aux;
+  }
+
+  Future<Uint8List> getImageByPath(String path) async{
+    Uint8List image;
+    await FirebaseStorage.instance.ref(path).getData().then((value) => image = value);
+    return image;
   }
 
 

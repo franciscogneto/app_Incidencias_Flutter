@@ -198,7 +198,7 @@ class _MenuPage extends State<MenuPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              IncidencesList()));
+                                              IncidencesList(widget.auth.currentUser.email)));
                                 }),
                           ),
                         ],
