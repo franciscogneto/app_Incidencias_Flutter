@@ -38,7 +38,7 @@ class services {
     if(aux == ''){
       await FirebaseStorage.instance.ref(path).putFile(photo).then((value) {
         if(value.bytesTransferred != 0)
-          aux = 'image uploaded';
+          aux = 'Added Incidence';
         else
           aux = 'fail to upload the photo, please try again';
       });

@@ -13,23 +13,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:incidencias_app/services/services.dart';
 
 
-/*class AddIncidence extends StatelessWidget {
-  String type;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Incidência"),
-        centerTitle: true,
-        backgroundColor: Colors.indigo,
-      ),
-      body: Container(
-        child: AddIncidenceForm(),
-      ),
-    );
-  }
-}*/
 
 class AddIncidenceForm extends StatefulWidget {
   var items = new List<Item>();
@@ -205,17 +188,18 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                   ],
                 ),
               ),
-              Text(
-                _response,
-                style: TextStyle(
-                  color: Colors.amber,
-                  letterSpacing: 1.5,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'OpenSans',
+              Center(
+                child: Text(
+                  _response,
+                  style: TextStyle(
+                    color: Colors.amber,
+                    letterSpacing: 1.5,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'OpenSans',
+                  ),
                 ),
-
-              ),//ListView
+              ),
             ], //Lista principal
           ),
         ),
@@ -266,7 +250,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
   }
 
   continued() async {
-
+    String response;
     if(_currentStep + 1 == totalStates){
       List<Item> getTrueItems = new List<Item>();
       int count;
@@ -286,31 +270,35 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
         pathToImage: path,
         location: localization,
       );
-      services().addIncidenceByEmail(data, widget.auth.currentUser.email, _image, path).then((value) => _response = value);
 
-
-
-
-      /*await FirebaseFirestore.instance.collection('User').doc(widget.user.id).set(util.toJson()).then((value) => print('ok'));
-
-        try{
-        await FirebaseStorage.instance.ref(path).putFile(_image);
-        } on FirebaseException catch (e){
-          print(e.code);
-        }*/
+      if( localization != null && _textField != '' && getTrueItems.length != 0){
+        services().addIncidenceByEmail(data, widget.auth.currentUser.email, _image, path).then((value) => response = value);
+        if(!(_response != 'Added incidence')) {
+          _image = null;
+          localization = null;
+          _textField = '';
+        }
+      } else {
+        response = 'Image, localization and description are mandatoryyyyyy';
+      }
     }
+    else {
+      response = '';
+    }
+    setState(() {
+      _response = response;
+    });
+
     _currentStep < this.totalStates - 1 ? setState(() => _currentStep += 1) : null;
   }
 
   cancel() {
-    _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
+    _currentStep > 0 ? setState(() { _currentStep -= 1; _response = '';}) : null;
   }
-
 }
 
 
 class teste extends StatelessWidget {
-
   const teste(this.image);
   final image;
   @override
