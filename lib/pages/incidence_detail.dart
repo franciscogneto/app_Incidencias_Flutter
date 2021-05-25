@@ -34,14 +34,11 @@ class IncidenceDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalhes'),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Color(0xFF398AE5),
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
               Item(item.date.toString(), 'DATA'),
               Item(item.type, 'TIPO'),
               Item(item.description, 'DESCRIÇÃO'),
@@ -73,8 +70,6 @@ class IncidenceDetail extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-          ),
         ],
       ),
     );
@@ -98,7 +93,7 @@ class Item extends StatelessWidget {
         Column(
           children: [
             Text(title),
-            Text(content),
+            Text(content??''),
           ],
         ),
       ],
@@ -164,14 +159,27 @@ class ShowImageFromFireBase extends StatelessWidget {
                       ),
                     ],
                   );
-                } else {
+                } else if (data.data == null){
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Error, pleasy try again later'),
+                          Text('Esta incidência não possúi image'),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+                else {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Erro, tente novamente mais tarde'),
                         ],
                       ),
                     ],

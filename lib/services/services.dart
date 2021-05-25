@@ -31,26 +31,37 @@ class services {
   }
   ///It adds a new incidence to a user by his id and returns the status
   Future<String> addIncidenceByEmail(Incidence data,String email, File photo, String path) async{
-    String aux;
+    String aux = '';
     Util toUpdate;
     await this.getUtilDataFromUserByEmail(email).then((value) => toUpdate = value);
-    print(toUpdate);
+
     toUpdate.addIncidente(data);
-    await FirebaseFirestore.instance.collection('User').doc(email).set(toUpdate.toJson()).then((value) => aux = '').catchError(() => aux = 'Error, please try again');
+    await FirebaseFirestore.instance.collection('User').doc(email).set(toUpdate.toJson()).then((value) => aux = '');
     if(aux == ''){
-      await FirebaseStorage.instance.ref(path).putFile(photo).then((value) {
-        if(value.bytesTransferred != 0)
-          aux = 'Added Incidence';
-        else
-          aux = 'fail to upload the photo, please try again';
-      });
+      if(photo != null){
+        await FirebaseStorage.instance.ref(path).putFile(photo).then((value) {
+          if(value.bytesTransferred != 0)
+            aux = 'Incidência adicionada';
+          else
+            aux = 'Falha ao submeter a imagem, tente novamente';
+
+        });
+      } else {
+        aux = 'Incidência adicionada';
+      }
     }
+    else {
+      aux = 'Erro, tente novamente';
+    }
+
     return aux;
   }
 
   Future<Uint8List> getImageByPath(String path) async{
     Uint8List image;
-    await FirebaseStorage.instance.ref(path).getData().then((value) => image = value);
+    if(path != null){
+      await FirebaseStorage.instance.ref(path).getData().then((value) => image = value);
+    }
     return image;
   }
 

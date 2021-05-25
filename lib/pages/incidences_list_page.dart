@@ -61,7 +61,7 @@ class _IncidencesListState extends State<IncidencesList> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Error, please try again later',
+                            'Erro, tente novamente mais tarde',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 25,

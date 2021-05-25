@@ -182,7 +182,7 @@ class _LoginPage extends State<LoginPage> {
                 email: _email, password: _password);
 
            if(user != null){
-             await FirebaseFirestore.instance.collection('User').doc(_email).set({'creationData': new DateFormat('yyyy-MM-dd').format(new DateTime.now()),'incidences':[]}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
+             await FirebaseFirestore.instance.collection('User').doc(_email).set({'creationData': new DateTime.now(),'incidences':[]}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
              DocumentSnapshot user;
              await FirebaseFirestore.instance.collection('User').doc(_email).get().then((value) => user = value);
              Navigator.push(context,

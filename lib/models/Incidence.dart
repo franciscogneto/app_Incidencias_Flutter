@@ -24,7 +24,7 @@ class Incidence{
 
    Map<String,dynamic> toJson() =>{
    'type': this.type,
-   'descripton' :   this.description,
+   'description' :   this.description,
    'date':   this.date,
    'status':    this.status,
      'items': this.incidenceToJsonList(),
@@ -66,7 +66,7 @@ class Incidence{
   @override
   String toString() {
     return '{type: $type,'
-        'descripton:$description,'
+        'description:$description,'
         'date:$date,'
         'status:$status,'
         'items:$items,'

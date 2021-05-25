@@ -31,7 +31,7 @@ class Util{
     });
 
     if(json['creationData'] != null)
-      data.creationData = DateTime.parse(json['creationData']);
+      data.creationData = DateTime.fromMicrosecondsSinceEpoch(json['creationData'].microsecondsSinceEpoch);
     else
       data.creationData = null;
 

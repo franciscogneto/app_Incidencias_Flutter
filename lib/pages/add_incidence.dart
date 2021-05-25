@@ -38,12 +38,17 @@ class AddIncidenceForm extends StatefulWidget {
 }
 
 class _AddIncidenceFormState extends State<AddIncidenceForm> {
-  final _formKey = GlobalKey<FormState>();
+
+  _AddIncidenceFormState(){
+    _erroMessage = ''; _textField = ''; _response = '';
+    localization = null;
+  }
+
   String _erroMessage = '', _textField = '', _response = '';
   int _currentStep = 0;
   StepperType stepperType = StepperType.vertical;
   int totalStates = 4;
-  Position localization;
+  Position localization = null;
   File _image;
   final picker = ImagePicker();
   Future getImage() async{
@@ -57,6 +62,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Incidência"),
@@ -153,7 +159,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                               icon: Icon(
                                   Icons.add_a_photo
                               ),
-                              color: Colors.indigo,
+                              color: Color(0xFF398AE5),
                               iconSize: 40,
                               onPressed: getImage,
                           ),
@@ -172,7 +178,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                               icon: Icon(
                                   Icons.location_on
                               ),
-                              color: Colors.indigo,
+                              color: Color(0xFF398AE5),
                               iconSize: 40,
                               onPressed: () async{
                                 Future<Position> position = _determinePosition();
@@ -190,7 +196,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
               ),
               Center(
                 child: Text(
-                  _response,
+                  _response??'',
                   style: TextStyle(
                     color: Colors.amber,
                     letterSpacing: 1.5,
@@ -217,20 +223,20 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
     LocationPermission permission;
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+      return Future.error('Serviços de locazalição desabilitados.');
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+        return Future.error('Permissão de localização recusada');
       }
     }
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
       return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+          'Permissões de localização estão permanentemente desabilitados');
     }
     Position position;
     await Geolocator.getCurrentPosition().then((value) => position = value);
@@ -250,12 +256,16 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
   }
 
   continued() async {
-    String response;
+    String response = '';
     if(_currentStep + 1 == totalStates){
       List<Item> getTrueItems = new List<Item>();
       int count;
-      await services().getCountIncidentesByEmail(widget.auth.currentUser.email).then((value) => count = value);
-      String path = 'images/' + widget.user.id + '/Incidence_'+count.toString()+'.jpg'; //Falta colocar o numero da incidencia no final do nome
+      String path;
+      if(_image != null){
+        await services().getCountIncidentesByEmail(widget.auth.currentUser.email).then((value) => count = value);
+        path = 'images/' + widget.user.id + '/Incidence_'+count.toString()+'.jpg';
+      }
+
       widget.items.forEach((element) {
         if(element.checked){
           getTrueItems.add(element);
@@ -272,44 +282,35 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
       );
 
       if( localization != null && _textField != '' && getTrueItems.length != 0){
-        services().addIncidenceByEmail(data, widget.auth.currentUser.email, _image, path).then((value) => response = value);
-        if(!(_response != 'Added incidence')) {
-          _image = null;
-          localization = null;
-          _textField = '';
-        }
+
+        await services().addIncidenceByEmail(data, widget.auth.currentUser.email, _image, path).then((value) {
+          if((value == 'Added Incidence')) {
+            setState(() {
+              _response = value;
+              localization = null;
+              _textField = '';
+            });
+          } else {
+            setState(() {
+              _response = value;
+            });
+          }
+        });
       } else {
-        response = 'Image, localization and description are mandatoryyyyyy';
+        setState(() {
+          _response = 'Tipo, localização e descrição são obrigatórios!';
+        });
       }
     }
-    else {
-      response = '';
-    }
-    setState(() {
-      _response = response;
-    });
 
     _currentStep < this.totalStates - 1 ? setState(() => _currentStep += 1) : null;
   }
 
   cancel() {
+    setState(() {
+      _response = '';
+    });
     _currentStep > 0 ? setState(() { _currentStep -= 1; _response = '';}) : null;
   }
 }
 
-
-class teste extends StatelessWidget {
-  const teste(this.image);
-  final image;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('aaaa'),
-      ),
-      body: Center(
-        child: Image.file(image),
-      ),
-    );
-  }
-}

@@ -21,32 +21,12 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPage extends State<MenuPage> {
   final Colorblue = Colors.indigo;
-  final String image =
-      'https://conteudo.imguol.com.br/c/entretenimento/13/2017/09/20/marcos-o-vin-diesel-brasileiro-1505924753054_v2_900x506.jpg.webp';
-  DocumentSnapshot data;
-  Future<void> getData() async {
-    DocumentSnapshot aux;
-    await FirebaseFirestore.instance
-        .collection('User')
-        .doc('teste12@teste123.com')
-        .get()
-        .then((value) {
-      aux = value;
-    });
-    return aux;
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    /*Future<DocumentSnapshot> teste = services().getDocumentFromUserByEmail('teste12@teste123.com');
-    teste.then((value) => print(Util.fromJson(value.data()).incidences));
-    Future<int> cont = services().getCountIncidentesByEmail('teste12@teste123.com');
-    cont.then((value) => print('quantidade: '+value.toString()));*/
-    /*getData();
-    if(data!=null) {
-      Util teste = Util.fromJson(data.data());
-      print(teste.toJson());
-    }*/
+
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Menu',
@@ -96,17 +76,17 @@ class _MenuPage extends State<MenuPage> {
                       Column(
                         children: <Widget>[
                           auxText(25, 'OpenSans', 'Total de incidências'),
-
                           FutureBuilder(
                               future: services().getUtilDataFromUserByEmail(widget.auth.currentUser.email),
                               builder: (context,data){
                                 if(data.hasData){
                                   return auxText(25, 'OpenSans', data.data.incidences.length.toString());
                                 } else if (data.connectionState == ConnectionState.waiting){
-                                  return auxText(20, 'OpenSans', 'Loading...');
+                                  return auxText(20, 'OpenSans', 'Carregando...');
                                 }
                                 else {
-                                  return auxText(20, 'OpenSans', 'Error, please try later');
+
+                                  return auxText(20, 'OpenSans', 'Erro, tente novamente mais tarde');
                                 }
                               }),
                         ],
@@ -128,10 +108,10 @@ class _MenuPage extends State<MenuPage> {
                                 });
                                 return auxText(25, 'OpenSans', qtd.toString());
                               } else if (data.connectionState == ConnectionState.waiting){
-                                return auxText(20, 'OpenSans', 'Loading...');
+                                return auxText(20, 'OpenSans', 'Carregando...');
                               }
                               else {
-                                return auxText(20, 'OpenSans', 'Error, please try later');
+                                return auxText(20, 'OpenSans', 'Erro, tente novamente mais tarde');
                               }
                             }),
                       ],
@@ -155,15 +135,15 @@ class _MenuPage extends State<MenuPage> {
                                 if(element.status == 1)
                                   qtd++;
                               });
-                              print(qtd);
+
                               int rest = qtd%5;
                               int result = (qtd/5).toInt();
                               return auxText(20, 'OpenSans', '$rest/5  ($result)' );
                             } else if (data.connectionState == ConnectionState.waiting){
-                              return auxText(20, 'OpenSans', 'Loading...');
+                              return auxText(20, 'OpenSans', 'Carregando...');
                             }
                             else {
-                              return auxText(20, 'OpenSans', 'Error, please try later');
+                              return auxText(20, 'OpenSans', 'Erro, tente novamente mais tarde');
                             }
                           }),
                     ],
