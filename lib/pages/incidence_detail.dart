@@ -166,7 +166,7 @@ class ShowImageFromFireBase extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Esta incidência não possúi image'),
+                          Text('Esta incidência não possui imagem'),
                         ],
                       ),
                     ],

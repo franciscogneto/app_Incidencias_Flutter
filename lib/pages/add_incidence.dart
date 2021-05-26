@@ -10,6 +10,7 @@ import 'package:incidencias_app/models/Item.dart';
 import 'package:incidencias_app/models/Util.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:incidencias_app/pages/menu_page.dart';
 import 'package:incidencias_app/services/services.dart';
 
 
@@ -71,7 +72,14 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_outlined),
           onPressed: (){
-            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        MenuPage(
+                            widget.auth,
+                            widget.user)));
+            //Navigator.pop(context);
           },
         ),
       ),

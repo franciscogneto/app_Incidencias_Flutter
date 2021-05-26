@@ -22,14 +22,20 @@ class MenuPage extends StatefulWidget {
 class _MenuPage extends State<MenuPage> {
   final Colorblue = Colors.indigo;
 
+  @override
+  void didChangeDependencies() {
+    setState(() {
+      this.build(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
 
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Menu',
+
       home: Scaffold(
         body: Column(
           children: <Widget>[
