@@ -189,9 +189,12 @@ class _LoginPage extends State<LoginPage> {
         elevation: 10.0,
         onPressed: () async {
           try {
-            UserCredential user = await auth.createUserWithEmailAndPassword(
-                email: _email, password: _password).then((value) { print(value.user.toString());});
+            UserCredential user;
+            await auth.createUserWithEmailAndPassword(
+                email: _email, password: _password).then((value) => user = value);
+
             if (user != null) {
+
               await FirebaseFirestore.instance
                   .collection('User')
                   .doc(_email)
