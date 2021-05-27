@@ -22,7 +22,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'login',
       debugShowCheckedModeBanner: false,
-      supportedLocales: [const Locale('pt','BR')],
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
