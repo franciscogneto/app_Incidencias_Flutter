@@ -24,58 +24,55 @@ class _IncidencesListState extends State<IncidencesList> {
         title: Text('Minhas incidências'),
         backgroundColor: Color(0xFF398AE5),
       ),
-      body:
-          FutureBuilder(
-              future: services().getUtilDataFromUserByEmail(widget.email),
-              builder: (context, data) {
-                if (data.hasData) {
-                  return ListView.builder(
-                    itemCount: data.data.incidences.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      final item = data.data.incidences[index];
-                      return IncidenceWidget(item);
-                    },
-                  );
-                } else if (data.connectionState == ConnectionState.waiting) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+      body: FutureBuilder(
+          future: services().getUtilDataFromUserByEmail(widget.email),
+          builder: (context, data) {
+            if (data.hasData) {
+              return ListView.builder(
+                itemCount: data.data.incidences.length,
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  final item = data.data.incidences[index];
+                  return IncidenceWidget(item);
+                },
+              );
+            } else if (data.connectionState == ConnectionState.waiting) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Loading(
-                            indicator: BallPulseIndicator(),
-                            size: 100,
-                            color: Color(0xFF398AE5),
-                          ),
-                        ],
-                      )
+                      Loading(
+                        indicator: BallPulseIndicator(),
+                        size: 100,
+                        color: Color(0xFF398AE5),
+                      ),
                     ],
-                  );
-                } else {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  )
+                ],
+              );
+            } else {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Erro, tente novamente mais tarde',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25,
-                              fontFamily: 'OpenSans',
-                            ),
-                          ),
-                        ],
-                      )
+                      Text(
+                        'Erro, tente novamente mais tarde',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontFamily: 'OpenSans',
+                        ),
+                      ),
                     ],
-                  );
-                }
-              }),
-
-
+                  )
+                ],
+              );
+            }
+          }),
     );
   }
 }

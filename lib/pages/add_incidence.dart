@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,19 +6,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:incidencias_app/models/Incidence.dart';
 import 'package:incidencias_app/models/Item.dart';
-import 'package:incidencias_app/models/Util.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:incidencias_app/pages/menu_page.dart';
 import 'package:incidencias_app/services/services.dart';
-
-
 
 class AddIncidenceForm extends StatefulWidget {
   var items = new List<Item>();
 
   int currentState;
-  AddIncidenceForm(this.auth,this.user){
+  AddIncidenceForm(this.auth, this.user) {
     items = [];
     items.add(Item(title: 'Instalação elétrica', checked: false));
     items.add(Item(title: 'Estacionamento', checked: false));
@@ -31,39 +26,39 @@ class AddIncidenceForm extends StatefulWidget {
   final DocumentSnapshot user;
   final FirebaseAuth auth;
 
-
   @override
   _AddIncidenceFormState createState() => _AddIncidenceFormState();
-
-
 }
 
 class _AddIncidenceFormState extends State<AddIncidenceForm> {
-
-  _AddIncidenceFormState(){
-    _erroMessage = ''; _textField = ''; _response = '';
+  _AddIncidenceFormState() {
+    _textField = '';
+    _response = '';
     localization = null;
   }
 
-  String _erroMessage = '', _textField = '', _response = '';
+  String _textField = '', _response = '';
   int _currentStep = 0;
   StepperType stepperType = StepperType.vertical;
   int totalStates = 4;
-  Position localization = null;
+  Position localization;
   File _image;
   final picker = ImagePicker();
-  Future getImage() async{
-    final image2 = await ImagePicker.platform.pickImage(source: ImageSource.camera);
+  Future getImage() async {
+    final image2 =
+        await ImagePicker.platform.pickImage(source: ImageSource.camera);
     setState(() {
       _image = File(image2.path);
     });
-
   }
-
 
   @override
   Widget build(BuildContext context) {
-
+    if(_currentStep + 1 != totalStates){
+      setState(() {
+        _response = '';
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("Incidência"),
@@ -71,19 +66,17 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
         backgroundColor: Color(0xFF398AE5),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_outlined),
-          onPressed: (){
+          onPressed: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        MenuPage(
-                            widget.auth,
-                            widget.user)));
+                    builder: (context) => MenuPage(widget.auth, widget.user)));
             //Navigator.pop(context);
           },
         ),
       ),
-      body: Theme(//CHANGE THE STEPPER CONTEXT COLLORS
+      body: Theme(
+        //CHANGE THE STEPPER CONTEXT COLLORS
         data: ThemeData(
           accentColor: Colors.indigo,
         ),
@@ -99,7 +92,6 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                   onStepTapped: (step) => tapped(step),
                   onStepContinue: continued,
                   onStepCancel: cancel,
-
                   steps: <Step>[
                     Step(
                       title: Text('Tipo da incidência'),
@@ -108,19 +100,18 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                           ListView.builder(
                             itemCount: widget.items.length,
                             shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index){//como deve construir esses itens na tela
+                            itemBuilder: (BuildContext context, int index) {
+                              //como deve construir esses itens na tela
                               final item = widget.items[index];
-
                               return CheckboxListTile(
                                 title: Text(item.title),
                                 key: Key(item.title),
                                 value: item.checked,
                                 activeColor: Colors.indigo,
-                                onChanged: (value){
+                                onChanged: (value) {
                                   setState(() {
                                     item.checked = value;
                                   });
-
                                 },
                               );
                             },
@@ -128,12 +119,13 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                         ],
                       ),
                       isActive: _currentStep >= 0,
-                      state: _currentStep >= 1 ?
-                      StepState.complete : StepState.editing,
+                      state: _currentStep >= 1
+                          ? StepState.complete
+                          : StepState.editing,
                     ),
                     Step(
                       title: Text('Descrição'),
-                      content:  Column(
+                      content: Column(
                         children: [
                           TextFormField(
                             keyboardType: TextInputType.text,
@@ -146,7 +138,7 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                               ),
                             ),
                             style: TextStyle(fontSize: 15),
-                            onChanged: (text){
+                            onChanged: (text) {
                               setState(() {
                                 _textField = text;
                               });
@@ -155,56 +147,58 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                         ],
                       ),
                       isActive: _currentStep >= 1,
-                      state: _currentStep >= 2 ?
-                      StepState.complete : StepState.editing,
+                      state: _currentStep >= 2
+                          ? StepState.complete
+                          : StepState.editing,
                     ),
                     Step(
                       title: Text('Adicionar uma foto'),
-                      content:  Column(
+                      content: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           IconButton(
-                              icon: Icon(
-                                  Icons.add_a_photo
-                              ),
-                              color: Color(0xFF398AE5),
-                              iconSize: 40,
-                              onPressed: getImage,
+                            icon: Icon(Icons.add_a_photo),
+                            color: Color(0xFF398AE5),
+                            iconSize: 40,
+                            onPressed: getImage,
                           ),
                         ],
                       ),
                       isActive: _currentStep >= 2,
-                      state: _currentStep >= 3 ?
-                      StepState.complete : StepState.editing,
+                      state: _currentStep >= 3
+                          ? StepState.complete
+                          : StepState.editing,
                     ),
                     Step(
                       title: Text('Adicionar localização'),
-                      content:  Column(
+                      content: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           IconButton(
-                              icon: Icon(
-                                  Icons.location_on
-                              ),
+                              icon: Icon(Icons.location_on),
                               color: Color(0xFF398AE5),
                               iconSize: 40,
-                              onPressed: () async{
-                                Future<Position> position = _determinePosition();
-                              position.then((value) => localization = value);
-                              }
-                          ),
+                              onPressed: () async {
+                                Future<Position> position =
+                                    _determinePosition();
+                                String aux;
+                                position.then((value) { localization = value; if(value != null){setState(() {
+                                  _response = 'Localização adicionada';
+                                }); } });
+                              }),
                         ],
                       ),
                       isActive: _currentStep >= 3,
-                      state: _currentStep >= 4 ?
-                      StepState.complete : StepState.editing,
+                      state: _currentStep >= 4
+                          ? StepState.complete
+                          : StepState.editing,
                     ),
                   ],
                 ),
               ),
               Center(
                 child: Text(
-                  _response??'',
+                  _response ?? '',
                   style: TextStyle(
                     color: Colors.amber,
                     letterSpacing: 1.5,
@@ -221,10 +215,6 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
       //SingleChild
     );
   }
-
-
-
-
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
@@ -251,8 +241,6 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
     return position;
   }
 
-
-
   switchStepsType() {
     setState(() => stepperType == StepperType.vertical
         ? stepperType = StepperType.horizontal
@@ -265,17 +253,23 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
 
   continued() async {
     String response = '';
-    if(_currentStep + 1 == totalStates){
+    if (_currentStep + 1 == totalStates) {
       List<Item> getTrueItems = new List<Item>();
       int count;
       String path;
-      if(_image != null){
-        await services().getCountIncidentesByEmail(widget.auth.currentUser.email).then((value) => count = value);
-        path = 'images/' + widget.user.id + '/Incidence_'+count.toString()+'.jpg';
+      if (_image != null) {
+        await services()
+            .getCountIncidentesByEmail(widget.auth.currentUser.email)
+            .then((value) => count = value);
+        path = 'images/' +
+            widget.user.id +
+            '/Incidence_' +
+            count.toString() +
+            '.jpg';
       }
 
       widget.items.forEach((element) {
-        if(element.checked){
+        if (element.checked) {
           getTrueItems.add(element);
         }
       });
@@ -289,15 +283,23 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
         location: localization,
       );
 
-      if( localization != null && _textField != '' && getTrueItems.length != 0){
-
-        await services().addIncidenceByEmail(data, widget.auth.currentUser.email, _image, path).then((value) {
-          if((value == 'Added Incidence')) {
+      if (localization != null &&
+          _textField != '' &&
+          getTrueItems.length != 0) {
+        await services()
+            .addIncidenceByEmail(
+                data, widget.auth.currentUser.email, _image, path)
+            .then((value) {
+          if ((value == 'Incidência adicionada')) {
             setState(() {
               _response = value;
               localization = null;
-              _textField = '';
+              widget.items.forEach((element) {
+                element.reset();
+              });
             });
+
+
           } else {
             setState(() {
               _response = value;
@@ -311,14 +313,20 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
       }
     }
 
-    _currentStep < this.totalStates - 1 ? setState(() => _currentStep += 1) : null;
+    _currentStep < this.totalStates - 1
+        ? setState(() => _currentStep += 1)
+        : null;
   }
 
   cancel() {
     setState(() {
       _response = '';
     });
-    _currentStep > 0 ? setState(() { _currentStep -= 1; _response = '';}) : null;
+    _currentStep > 0
+        ? setState(() {
+            _currentStep -= 1;
+            _response = '';
+          })
+        : null;
   }
 }
-

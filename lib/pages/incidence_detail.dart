@@ -39,37 +39,40 @@ class IncidenceDetail extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-              Item(item.date.toString(), 'DATA'),
-              Item(item.type, 'TIPO'),
-              Item(item.description, 'DESCRIÇÃO'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+          Item(item.date.toString(), 'DATA'),
+          Item(item.type, 'TIPO'),
+          Item(item.description, 'DESCRIÇÃO'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      Text('IMAGEM'),
-                      IconButton(
-                          icon: Icon(Icons.image, color: Color(0xFF398AE5)),
-                          onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => ShowImageFromFireBase(item.pathToImage)));
-                          }),
-                    ],
-                  ),
+                  Text('IMAGEM'),
+                  IconButton(
+                      icon: Icon(Icons.image, color: Color(0xFF398AE5)),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ShowImageFromFireBase(item.pathToImage)));
+                      }),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      Text('STATUS'),
-                      Text(text),
-                      icon,
-                    ],
-                  ),
+                  Text('STATUS'),
+                  Text(text),
+                  icon,
                 ],
               ),
+            ],
+          ),
         ],
       ),
     );
@@ -93,7 +96,7 @@ class Item extends StatelessWidget {
         Column(
           children: [
             Text(title),
-            Text(content??''),
+            Text(content ?? ''),
           ],
         ),
       ],
@@ -159,7 +162,7 @@ class ShowImageFromFireBase extends StatelessWidget {
                       ),
                     ],
                   );
-                } else if (data.data == null){
+                } else if (data.data == null) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -171,8 +174,7 @@ class ShowImageFromFireBase extends StatelessWidget {
                       ),
                     ],
                   );
-                }
-                else {
+                } else {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [

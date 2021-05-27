@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'incidences_list_page.dart';
 import 'add_incidence.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:incidencias_app/pages/login_page.dart';
-import 'package:incidencias_app/models/Util.dart';
+
 import 'package:incidencias_app/services/services.dart';
 
 class MenuPage extends StatefulWidget {
@@ -23,15 +23,7 @@ class _MenuPage extends State<MenuPage> {
   final Colorblue = Colors.indigo;
 
   @override
-  void didChangeDependencies() {
-    setState(() {
-      this.build(context);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Menu',
@@ -83,16 +75,19 @@ class _MenuPage extends State<MenuPage> {
                         children: <Widget>[
                           auxText(25, 'OpenSans', 'Total de incidências'),
                           FutureBuilder(
-                              future: services().getUtilDataFromUserByEmail(widget.auth.currentUser.email),
-                              builder: (context,data){
-                                if(data.hasData){
-                                  return auxText(25, 'OpenSans', data.data.incidences.length.toString());
-                                } else if (data.connectionState == ConnectionState.waiting){
-                                  return auxText(20, 'OpenSans', 'Carregando...');
-                                }
-                                else {
-
-                                  return auxText(20, 'OpenSans', 'Erro, tente novamente mais tarde');
+                              future: services().getUtilDataFromUserByEmail(
+                                  widget.auth.currentUser.email??''),
+                              builder: (context, data) {
+                                if (data.hasData) {
+                                  return auxText(25, 'OpenSans',
+                                      data.data.incidences.length.toString());
+                                } else if (data.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return auxText(
+                                      20, 'OpenSans', 'Carregando...');
+                                } else {
+                                  return auxText(20, 'OpenSans',
+                                      'Erro, tente novamente mais tarde');
                                 }
                               }),
                         ],
@@ -104,26 +99,26 @@ class _MenuPage extends State<MenuPage> {
                       children: <Widget>[
                         auxText(25, 'OpenSans', 'Incidência em aberto'),
                         FutureBuilder(
-                            future: services().getUtilDataFromUserByEmail(widget.auth.currentUser.email),
-                            builder: (context,data){
-                              if(data.hasData){
+                            future: services().getUtilDataFromUserByEmail(
+                                widget.auth.currentUser.email),
+                            builder: (context, data) {
+                              if (data.hasData) {
                                 int qtd = 0;
-                                data.data.incidences.forEach((element){
-                                  if(element.status == 2)
-                                    qtd++;
+                                data.data.incidences.forEach((element) {
+                                  if (element.status == 2) qtd++;
                                 });
                                 return auxText(25, 'OpenSans', qtd.toString());
-                              } else if (data.connectionState == ConnectionState.waiting){
+                              } else if (data.connectionState ==
+                                  ConnectionState.waiting) {
                                 return auxText(20, 'OpenSans', 'Carregando...');
-                              }
-                              else {
-                                return auxText(20, 'OpenSans', 'Erro, tente novamente mais tarde');
+                              } else {
+                                return auxText(20, 'OpenSans',
+                                    'Erro, tente novamente mais tarde');
                               }
                             }),
                       ],
                     ),
                   ]),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -133,23 +128,25 @@ class _MenuPage extends State<MenuPage> {
                         size: 75,
                       ),
                       FutureBuilder(
-                          future: services().getUtilDataFromUserByEmail(widget.auth.currentUser.email),
-                          builder: (context,data){
-                            if(data.hasData){
+                          future: services().getUtilDataFromUserByEmail(
+                              widget.auth.currentUser.email),
+                          builder: (context, data) {
+                            if (data.hasData) {
                               int qtd = 0;
-                              data.data.incidences.forEach((element){
-                                if(element.status == 1)
-                                  qtd++;
+                              data.data.incidences.forEach((element) {
+                                if (element.status == 1) qtd++;
                               });
 
-                              int rest = qtd%5;
-                              int result = (qtd/5).toInt();
-                              return auxText(20, 'OpenSans', '$rest/5  ($result)' );
-                            } else if (data.connectionState == ConnectionState.waiting){
+                              int rest = qtd % 5;
+                              int result = (qtd / 5).toInt();
+                              return auxText(
+                                  20, 'OpenSans', '$rest/5  ($result)');
+                            } else if (data.connectionState ==
+                                ConnectionState.waiting) {
                               return auxText(20, 'OpenSans', 'Carregando...');
-                            }
-                            else {
-                              return auxText(20, 'OpenSans', 'Erro, tente novamente mais tarde');
+                            } else {
+                              return auxText(20, 'OpenSans',
+                                  'Erro, tente novamente mais tarde');
                             }
                           }),
                     ],
@@ -183,8 +180,8 @@ class _MenuPage extends State<MenuPage> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              IncidencesList(widget.auth.currentUser.email)));
+                                          builder: (context) => IncidencesList(
+                                              widget.auth.currentUser.email)));
                                 }),
                           ),
                         ],
@@ -240,9 +237,10 @@ class _MenuPage extends State<MenuPage> {
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () async {
-                await widget.auth.signOut();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
+                await widget.auth.signOut().then((value) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                } );
               },
             ),
           ],
@@ -254,7 +252,7 @@ class _MenuPage extends State<MenuPage> {
 }
 
 class auxText extends StatelessWidget {
-  auxText(double size, String family, String content){
+  auxText(double size, String family, String content) {
     this.fontFamily = family;
     this.fontSize = size;
     this.content = content;
@@ -265,14 +263,13 @@ class auxText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  return Text(
-    content,
-    style: TextStyle(
-      color: Colors.white,
-      fontSize: fontSize,
-      fontFamily: fontFamily,
-    ),
-  );
+    return Text(
+      content,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: fontSize,
+        fontFamily: fontFamily,
+      ),
+    );
   }
-
 }

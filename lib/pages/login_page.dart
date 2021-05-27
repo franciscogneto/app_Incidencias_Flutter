@@ -1,26 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'menu_page.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:loading/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class LoginPage extends StatefulWidget{
-
+class LoginPage extends StatefulWidget {
   @override
   _LoginPage createState() => _LoginPage();
-
 }
 
-
-
 class _LoginPage extends State<LoginPage> {
-  String _email,_password,_erroMessage = '';
+  String _email = '', _password = '', _erroMessage = '';
   final auth = FirebaseAuth.instance;
 
-  _buildEmailContext(){
+  _buildEmailContext() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -32,7 +25,9 @@ class _LoginPage extends State<LoginPage> {
             fontFamily: 'OpenSans',
           ),
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         Container(
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
@@ -53,14 +48,17 @@ class _LoginPage extends State<LoginPage> {
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14),
-              prefixIcon: Icon(Icons.email, color: Colors.white,),
+              prefixIcon: Icon(
+                Icons.email,
+                color: Colors.white,
+              ),
               hintText: 'Enter your email',
               hintStyle: TextStyle(
                 color: Colors.white54,
                 fontFamily: 'OpenSans',
               ),
             ),
-            onChanged: (value){
+            onChanged: (value) {
               setState(() {
                 _email = value.trim();
               });
@@ -70,7 +68,8 @@ class _LoginPage extends State<LoginPage> {
       ],
     );
   }
-  _buildPasswordContext(){
+
+  _buildPasswordContext() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -82,7 +81,9 @@ class _LoginPage extends State<LoginPage> {
             fontFamily: 'OpenSans',
           ),
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         Container(
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
@@ -104,14 +105,17 @@ class _LoginPage extends State<LoginPage> {
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14),
-              prefixIcon: Icon(Icons.lock, color: Colors.white,),
+              prefixIcon: Icon(
+                Icons.lock,
+                color: Colors.white,
+              ),
               hintText: 'Enter your password',
               hintStyle: TextStyle(
                 color: Colors.white54,
                 fontFamily: 'OpenSans',
               ),
             ),
-            onChanged: (value){
+            onChanged: (value) {
               setState(() {
                 _password = value.trim();
               });
@@ -121,31 +125,38 @@ class _LoginPage extends State<LoginPage> {
       ],
     );
   }
-  _buildSignInButton(context){
+
+  _buildSignInButton(context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: MediaQuery.of(context).size.width/2,
+      width: MediaQuery.of(context).size.width / 2,
       child: RaisedButton(
         elevation: 10.0,
-        onPressed: () async{
-          //await FirebaseFirestore.instance.collection('User').doc(_email).get().then((value) => print(value.data().toString()));
-          try{
-            await auth.signInWithEmailAndPassword(email: _email, password: _password);
-            if(auth.currentUser != null){
-
+        onPressed: () async {
+          try {
+            await auth.signInWithEmailAndPassword(
+                email: _email, password: _password);
+            if (auth.currentUser != null) {
               DocumentSnapshot user;
-              await FirebaseFirestore.instance.collection('User').doc(_email).get().then((value) => user = value);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
+              await FirebaseFirestore.instance
+                  .collection('User')
+                  .doc(_email)
+                  .get()
+                  .then((value) => user = value);
+              if(user != null){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MenuPage(auth, user)));
+              }
             }
           } on FirebaseAuthException catch (e) {
             setState(() {
-              if(_password.trim().length == 0){
+              if (_password.trim().length == 0) {
                 _erroMessage = 'incorrect password';
-              } else if (e.code == 'unknown'){
+              } else if (e.code == 'unknown') {
                 _erroMessage = 'password or email incorrect';
-              }
-              else {
+              } else {
                 _erroMessage = e.code;
               }
             });
@@ -153,7 +164,7 @@ class _LoginPage extends State<LoginPage> {
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
         color: Colors.white,
         child: Text(
@@ -169,42 +180,49 @@ class _LoginPage extends State<LoginPage> {
       ),
     );
   }
-  _buildSignOutButton(context){
+
+  _buildSignOutButton(context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5.0),
-      width: MediaQuery.of(context).size.width/2,
+      width: MediaQuery.of(context).size.width / 2,
       child: RaisedButton(
         elevation: 10.0,
-        onPressed: () async{
-          String message;
+        onPressed: () async {
           try {
-           UserCredential user = await auth.createUserWithEmailAndPassword(
-                email: _email, password: _password);
-
-           if(user != null){
-             await FirebaseFirestore.instance.collection('User').doc(_email).set({'creationData': new DateTime.now(),'incidences':[]}).then((value)=> print('Usuário Criado')).catchError((error)=> print('error $error'));
-             DocumentSnapshot user;
-             await FirebaseFirestore.instance.collection('User').doc(_email).get().then((value) => user = value);
-             Navigator.push(context,
-                 MaterialPageRoute(builder: (context) => MenuPage(auth,user)));
-           }
-           else {
-             print('Erro inesperado');
-           }
+            UserCredential user = await auth.createUserWithEmailAndPassword(
+                email: _email, password: _password).then((value) { print(value.user.toString());});
+            if (user != null) {
+              await FirebaseFirestore.instance
+                  .collection('User')
+                  .doc(_email)
+                  .set({'creationData': new DateTime.now(), 'incidences': []})
+                  .then((value) => print('Usuário Criado'))
+                  .catchError((error) => print('error $error'));
+              DocumentSnapshot user;
+              await FirebaseFirestore.instance
+                  .collection('User')
+                  .doc(_email)
+                  .get()
+                  .then((value) => user = value);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MenuPage(auth, user)));
+            } else {
+              print('Erro inesperado');
+            }
           } on FirebaseAuthException catch (e) {
             setState(() {
-              if(_password.trim().length == 0){
+              if (_password.trim().length == 0) {
                 _erroMessage = 'incorrect password';
-              } else if (e.code == 'unknown'){
+              } else if (e.code == 'unknown') {
                 _erroMessage = 'password or email incorrect';
-              }
-              else {
+              } else {
                 _erroMessage = e.code;
               }
             });
-
           }
-          },
+        },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -225,7 +243,7 @@ class _LoginPage extends State<LoginPage> {
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -242,12 +260,11 @@ class _LoginPage extends State<LoginPage> {
                   Color(0xFF478DE0),
                   Color(0xFF398AE5),
                 ],
-                stops: [0.1,0.4,0.7,0.9],
+                stops: [0.1, 0.4, 0.7, 0.9],
               ),
             ),
           ),
           Container(
-
             height: double.infinity,
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
@@ -266,14 +283,22 @@ class _LoginPage extends State<LoginPage> {
                       fontSize: 30,
                     ),
                   ),
-                  SizedBox(height: 40,),
+                  SizedBox(
+                    height: 40,
+                  ),
                   _buildEmailContext(),
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   _buildPasswordContext(),
-                  SizedBox(height: 30,),
+                  SizedBox(
+                    height: 30,
+                  ),
                   _buildSignInButton(context),
                   _buildSignOutButton(context),
-                  SizedBox(height: 30,),
+                  SizedBox(
+                    height: 30,
+                  ),
                   Text(
                     _erroMessage.toString(),
                     style: TextStyle(
@@ -291,7 +316,6 @@ class _LoginPage extends State<LoginPage> {
         ],
       ),
     );
-
   }
 }
 
