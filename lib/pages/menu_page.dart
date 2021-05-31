@@ -27,19 +27,13 @@ class _MenuPage extends State<MenuPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Menu',
-
       home: Scaffold(
-        body: Column(
-          children: <Widget>[
+        body:
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 1.75,
+              height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
                 color: Colorblue,
-                borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(25),
-                  bottomLeft: Radius.circular(25),
-                ),
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -151,84 +145,65 @@ class _MenuPage extends State<MenuPage> {
                           }),
                     ],
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                       Column(
+                          children: <Widget>[
+                             IconButton(
+                                  icon: Icon(Icons.list),
+                                  color: Colors.white,
+                                  iconSize: 75,
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => IncidencesList(
+                                                widget.auth.currentUser.email)));
+                                  }),
+
+                          ],
+                        ),
+
+                      Column(
+                          children: <Widget>[
+                             Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 100,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+
+                                      color: Color(0xFF398AE5),
+                                    ),
+                                    child: IconButton(
+                                        icon: Icon(Icons.add),
+                                        color: Colors.white,
+                                        iconSize: 75,
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AddIncidenceForm(
+                                                          widget.auth,
+                                                          widget.user)));
+                                        }),
+                                  ),
+                                ],
+                              ),
+
+                          ],
+                        ),
+
+                    ],
+                  ),
                 ],
               ),
             ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 75),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 25, left: 25),
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            height: 100,
-                            width: 100,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
-                              color: Color(0xFF398AE5),
-                            ),
-                            child: IconButton(
-                                icon: Icon(Icons.list),
-                                color: Colors.white,
-                                iconSize: 75,
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => IncidencesList(
-                                              widget.auth.currentUser.email)));
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 25),
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(right: 25),
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  height: 100,
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50)),
-                                    color: Color(0xFF398AE5),
-                                  ),
-                                  child: IconButton(
-                                      icon: Icon(Icons.add),
-                                      color: Colors.white,
-                                      iconSize: 75,
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AddIncidenceForm(
-                                                        widget.auth,
-                                                        widget.user)));
-                                      }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+
+
+
         appBar: AppBar(
           backgroundColor: Color(0xFF73AEF5),
           elevation: 0,

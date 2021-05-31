@@ -22,6 +22,7 @@ class _IncidencesListState extends State<IncidencesList> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Minhas incidências'),
+        centerTitle: true,
         backgroundColor: Color(0xFF398AE5),
       ),
       body: FutureBuilder(

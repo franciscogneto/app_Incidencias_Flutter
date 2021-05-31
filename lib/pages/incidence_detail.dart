@@ -34,6 +34,7 @@ class IncidenceDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalhes'),
+        centerTitle: true,
         backgroundColor: Color(0xFF398AE5),
       ),
       body: Column(
@@ -114,7 +115,7 @@ class ShowImageFromFireBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Incidência"),
+        title: Text("Imagem"),
         centerTitle: true,
         backgroundColor: Color(0xFF398AE5),
         leading: IconButton(

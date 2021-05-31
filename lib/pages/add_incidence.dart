@@ -298,8 +298,10 @@ class _AddIncidenceFormState extends State<AddIncidenceForm> {
                 element.reset();
               });
             });
-
-
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MenuPage(widget.auth, widget.user)));
           } else {
             setState(() {
               _response = value;
