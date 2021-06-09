@@ -18,7 +18,7 @@ class IncidencesList extends StatefulWidget {
 class _IncidencesListState extends State<IncidencesList> {
   @override
   Widget build(BuildContext context) {
-    //print(widget.incidences);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Minhas incidências'),
